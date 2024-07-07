@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+
+<body class="bg-blue-200">
+    <div class="max-w-md mx-auto mt-10 bg-gray-100 rounded-lg shadow-md">
+        <div class="flex items-center p-4 bg-blue-300 rounded-t-lg">
+            <img src="https://image.fmkorea.com/files/attach/new3/20240328/5725250052/4873607476/6863014697/f988492629883f3ba0b15b5f15141c19.png"
+                alt="Profile Image" class="w-10 h-10 rounded-full">
+            <div class="ml-4">
+                <div class="text-lg font-semibold">아케론</div>
+                <div class="text-sm text-gray-700">2</div>
+            </div>
+            <div class="ml-auto flex items-center space-x-4 text-gray-700">
+                <i class="fas fa-phone"></i>
+                <i class="fas fa-video"></i>
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+        <div class="p-4 space-y-4" id="chatContainer">
+            <!-- Chat messages will be appended here -->
+        </div>
+        <div class="flex items-center justify-between p-2 bg-gray-200 border-t">
+            <i class="fas fa-camera text-gray-600"></i>
+            <input type="text" id="userMessage" class="flex-grow mx-2 p-2 border rounded-lg" placeholder="메세지 입력">
+            <button class="text-blue-500 font-semibold" onclick="sendMessage()">전송</button>
+        </div>
+    </div>
+
+    <script>
+        async function sendMessage() {
+            const userMessage = document.getElementById('userMessage').value;
+            const response = await fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ user_message: userMessage })
+            });
+            const data = await response.json();
+            const assistantMessage = data.assistant_message[0].text.value;
+
+            const chatContainer = document.getElementById('chatContainer');
+
+            const userMessageElement = document.createElement('div');
+            userMessageElement.className = 'flex space-x-2 items-start';
+            userMessageElement.innerHTML = `
+                <img src="https://media.tenor.com/YcRyor1O4bMAAAAi/stelle-honkai-star-rail-stelle.gif" alt="Profile Image" class="w-10 h-10 rounded-full">
+                <div class="bg-white p-3 rounded-lg shadow-sm">
+                    <p class="text-sm">${userMessage}</p>
+                    <span class="text-xs text-gray-500">${new Date().toLocaleTimeString()}</span>
+                </div>
+            `;
+            chatContainer.appendChild(userMessageElement);
+
+            const assistantMessageElement = document.createElement('div');
+            assistantMessageElement.className = 'flex space-x-2 items-start';
+            assistantMessageElement.innerHTML = `
+                <img src="https://image.fmkorea.com/files/attach/new3/20240328/5725250052/4873607476/6863014697/f988492629883f3ba0b15b5f15141c19.png" alt="Profile Image" class="w-10 h-10 rounded-full">
+                <div class="bg-yellow-200 p-3 rounded-lg shadow-sm">
+                    <p class="text-sm">${assistantMessage}</p>
+                    <span class="text-xs text-gray-500">${new Date().toLocaleTimeString()}</span>
+                </div>
+            `;
+            chatContainer.appendChild(assistantMessageElement);
+
+            document.getElementById('userMessage').value = '';
+        }
+    </script>
+</body>
+
+</html>
